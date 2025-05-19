@@ -1,2 +1,6 @@
 python-telegram-bot==20.6
 flask==3.0.0
+apscheduler
+nest-asyncio
+python-dotenv
+telegram
