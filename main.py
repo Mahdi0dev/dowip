@@ -6,6 +6,8 @@ from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
+from flask import Flask
+from threading import Thread
 
 # نام‌های سفارشی هفته
 week_days = {
@@ -18,11 +20,32 @@ week_days = {
     "Friday": "آدینه"
 }
 
+app = Flask('')
+
+
+@app.route('/')
+def main():
+    return 'Your bot is alive!'
+
+
+def run():
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))
+
+
+def keep_alive():
+    server = Thread(target=run)
+    server.start()
+
+
+keep_alive()
+
+
 # پاسخ به /start
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     today = datetime.datetime.now().strftime('%A')
     week_day = week_days.get(today, today)
     await update.message.reply_text(f"درود! امروز {week_day} است. ☀️")
+
 
 # پیام روزانه به کانال
 async def send_daily_message(application):
@@ -38,6 +61,7 @@ async def send_daily_message(application):
     except Exception as e:
         print("❌ Error sending daily message:", e)
 
+
 async def main():
     load_dotenv()
     TOKEN = os.getenv("BOT_TOKEN")
@@ -47,11 +71,14 @@ async def main():
 
     # Scheduler راه‌اندازی
     scheduler = AsyncIOScheduler()
-    scheduler.add_job(send_daily_message, CronTrigger(hour=1, minute=30), args=[app])
+    scheduler.add_job(send_daily_message,
+                      CronTrigger(hour=1, minute=30),
+                      args=[app])
     scheduler.start()
 
     print("🤖 Bot is running...")
     await app.run_polling()
+
 
 import nest_asyncio
 
