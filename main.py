@@ -47,13 +47,13 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(f"درود! امروز {week_day} است. ☀️")
 
 
-# پیام روزانه به کانال
+# پیام روزانه به دهلیز
 async def send_daily_message(application):
     today = datetime.datetime.now().strftime('%A')
     week_day = week_days.get(today, today)
 
     message = f"بامداد نیک! امروز «{week_day}» است. 🌞"
-    chat_id = "@The_Persian_Gostar"  # آیدی کانالت رو اینجا گذاشتی
+    chat_id = "@The_Persian_Gostar"
 
     try:
         await application.bot.send_message(chat_id=chat_id, text=message)
